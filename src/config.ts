@@ -18,7 +18,7 @@ export type ModelConfig = {
   provider: {
     sort: {
       by: string;
-      partition: String;
+      partition: string;
     };
   };
 };

@@ -1,6 +1,11 @@
 import { OpenRouter } from "@openrouter/sdk";
 import { config, type ModelConfig } from "./config";
 
+export type LLMResponse = {
+  model: string;
+  content: string;
+}
+
 export class openrouterService {
   private client: OpenRouter;
   private config: ModelConfig;
@@ -11,11 +16,11 @@ export class openrouterService {
     this.client = new OpenRouter({
       apiKey: this.config.apiKey,
       httpReferer: this.config.httpReferer,
-      xTitle: this.config.xTitle,
+      // xTitle: this.config.xTitle,
     });
   }
 
-  async generate(prompt: string) {
+  async generate(prompt: string) : Promise<LLMResponse> {
     type Provider = 'openai' | 'anthropic' | 'azure' | string;
     const payload = {
       chatRequest: {
@@ -44,8 +49,11 @@ export class openrouterService {
 
       // SDK returns a result object with choices on success
       const content = result.choices?.at(0)?.message?.content ?? "";
-      console.log(`Generated response: ${content}`);
-      return content;
+      return {
+        model: result.model,
+        content,
+      }
+    
     } catch (err) {
       console.error('Error calling OpenRouter.chat.send', err);
       throw err;
